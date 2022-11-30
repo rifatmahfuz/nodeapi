@@ -6,7 +6,7 @@ require("dotenv").config();
 const app = express();
 app.use(express.json());
 
-exports.getOneUser = async (req, res) => {
+exports.getUserData = async (req, res) => {
   try {
     const result = await profileModel.findOne({
       where: {
@@ -26,16 +26,17 @@ exports.getOneUser = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-exports.deleteOneUser = async (req, res) => {
+
+exports.deleteUserData = async (req, res) => {
   try {
     const userId = req.params.id;
-    const result = await profileModel.destroy({
+    const result = await authModel.destroy({
       where: {
         id: userId,
       },
       include: [
         {
-          model: authModel,
+          model: profileModel,
           cascade: true,
         },
       ],
@@ -46,8 +47,7 @@ exports.deleteOneUser = async (req, res) => {
     return res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
-exports.updateOneUser = async (req, res) => {
+exports.updateUserData = async (req, res) => {
   const authData = {
     email: req.body.email,
   };
@@ -75,7 +75,7 @@ exports.updateOneUser = async (req, res) => {
     });
 
     result = { profResult, authResult };
-    
+
     return res.json(result);
   } catch (e) {
     console.log("error deleting user:", e);
