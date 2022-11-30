@@ -1,3 +1,4 @@
+const sequelize = require("../config/database");
 const authModel = require("../models/auth");
 const profileModel = require("../models/profile");
 const bcrypt = require("bcrypt");
@@ -5,6 +6,7 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 exports.register = async (req, res) => {
+  const trx = await sequelize.transaction();
   const encryptedPassword = await bcrypt.hash(req.body.password, 10);
   const authData = {
     email: req.body.email.toLowerCase(),
@@ -26,12 +28,12 @@ exports.register = async (req, res) => {
       return res.status(409).send("User Already Exists. Please Login");
     }
 
-    const auth = await authModel.create(authData);
+    const auth = await authModel.create(authData, { transaction: trx });
     let profile;
 
     if (auth && auth.id) {
       profileData.authId = auth.id;
-      profile = await profileModel.create(profileData);
+      profile = await profileModel.create(profileData, { transaction: trx });
     }
     const token = jwt.sign(
       { user_id: auth.id, email: authData.email },
@@ -41,11 +43,14 @@ exports.register = async (req, res) => {
       }
     );
 
+    await trx.commit();
+
     return res.status(201).json({
       message: "Record created successfully!",
       response: { profile, auth, token },
     });
   } catch (error) {
+    await trx.rollback();
     console.log(error);
     return res.status(500).json({
       message: "Unable to create a record!",
