@@ -4,7 +4,7 @@ const profileModel = require("../models/profile");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-
+const services = require('../services/register.services');
 exports.register = async (req, res) => {
   const trx = await sequelize.transaction();
   const encryptedPassword = await bcrypt.hash(req.body.password, 10);
@@ -22,6 +22,7 @@ exports.register = async (req, res) => {
   };
 
   try {
+    const validate = await services.regValidator.validateAsync(req.body)
     const emailChecker = authData.email;
     const oldUser = await authModel.findOne({ where: { email: emailChecker } });
     if (oldUser) {
