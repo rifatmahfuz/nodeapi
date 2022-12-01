@@ -2,6 +2,7 @@ const express = require("express");
 const db = require("../config/database");
 const authModel = require("../models/auth");
 const profileModel = require("../models/profile");
+const uploadFile = require("../services/upload.services");
 require("dotenv").config();
 const app = express();
 app.use(express.json());
@@ -80,5 +81,33 @@ exports.updateUserData = async (req, res) => {
   } catch (e) {
     console.log("error deleting user:", e);
     return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+exports.addImage = async (req, res) => {
+  try {
+    await uploadFile(req, res);
+
+    if (req.file == undefined) {
+      return res.status(400).send({ message: "Please upload a file!" });
+    }
+    const userId = req.params.id;
+    const imgDir = process.cwd() + "/uploads/images/" + req.file.originalname;
+
+    const profResult = await profileModel.update(
+      { profilePhoto: imgDir },
+      {
+        where: {
+          id: userId,
+        },
+      }
+    );
+    res.status(200).send({
+      message: "Uploaded the file successfully: " + req.file.originalname,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: `Could not upload the file because ${err}`,
+    });
   }
 };
