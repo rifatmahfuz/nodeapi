@@ -21,10 +21,7 @@ app.use("", protectedRouter);
 
 const initApp = async () => {
   console.log("Testing the database connection..");
-  /**
-   * Testing the connection.
-   * using authenticate() function to test if the connection works.
-   */
+   // Testing the connection.
   try {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");
