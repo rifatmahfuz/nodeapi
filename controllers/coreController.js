@@ -4,6 +4,7 @@ const profileModel = require("../models/profile");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const services = require("../services/register.services");
 
 exports.register = async (req, res) => {
   const trx = await sequelize.transaction();
@@ -12,6 +13,7 @@ exports.register = async (req, res) => {
     email: req.body.email.toLowerCase(),
     password: encryptedPassword,
   };
+
   const profileData = {
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -22,6 +24,9 @@ exports.register = async (req, res) => {
   };
 
   try {
+    //validating siggn-up inputs using joi
+    const validate = await services.regValidator.validateAsync(req.body);
+    //checking if the user already exists
     const emailChecker = authData.email;
     const oldUser = await authModel.findOne({ where: { email: emailChecker } });
     if (oldUser) {
@@ -35,6 +40,7 @@ exports.register = async (req, res) => {
       profileData.authId = auth.id;
       profile = await profileModel.create(profileData, { transaction: trx });
     }
+
     const token = jwt.sign(
       { user_id: auth.id, email: authData.email },
       process.env.TOKEN_KEY,
@@ -42,7 +48,7 @@ exports.register = async (req, res) => {
         expiresIn: "2h",
       }
     );
-
+    // commiting the transaction
     await trx.commit();
 
     return res.status(201).json({

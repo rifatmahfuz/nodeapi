@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const publicRouter = require("./routes/publicRoutes");
+const protectedRouter = require("./routes/protectedRoutes");
+
 
 const authModel = require("./models/auth");
 const profileModel = require("./models/profile");
@@ -14,13 +16,12 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 app.use("", publicRouter);
+app.use("", protectedRouter);
+
 
 const initApp = async () => {
   console.log("Testing the database connection..");
-  /**
-   * Testing the connection.
-   * using authenticate() function to test if the connection works.
-   */
+   // Testing the connection.
   try {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");
