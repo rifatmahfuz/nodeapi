@@ -1,29 +1,31 @@
-const { Sequelize, DataTypes, Model } = require("sequelize");
-
-const sequelize = require("../config/database");
-class Auth extends Model {}
-
-Auth.init(
-  {
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
+const auth = (sequelize, DataTypes) => {
+  const Auth = sequelize.define(
+    "Auth",
+    {
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  },
+    {
+      tableName: "auths",
+      timestamps: false,
+    }
+  );
   {
-    sequelize, // Pass the connection instance
-    modelName: "auth", // Provide the name of the table
-    timestamps: false,
+    Auth.associate = (models) => {
+      Auth.hasOne(models.Profile, {
+        onDelete: "CASCADE",
+      });
+    };
   }
-);
 
-/**
- * Export the model, so that it can be used in any
- * page to execute CRUD operations on the app_posts table.
- */
+  return Auth;
+};
 
-module.exports = Auth;
+module.exports = auth;

@@ -1,7 +1,5 @@
 const express = require("express");
-const db = require("../config/database");
-const authModel = require("../models/auth");
-const profileModel = require("../models/profile");
+const db = require("../models");
 const uploadFile = require("../services/upload.services");
 require("dotenv").config();
 const app = express();
@@ -9,14 +7,14 @@ app.use(express.json());
 
 exports.getUserData = async (req, res) => {
   try {
-    const result = await profileModel.findOne({
+    const result = await db.Profile.findOne({
       where: {
         id: req.params.id,
       },
       raw: true,
       include: [
         {
-          model: authModel,
+          model: db.Auth,
           attributes: ["email"],
         },
       ],
@@ -31,13 +29,13 @@ exports.getUserData = async (req, res) => {
 exports.deleteUserData = async (req, res) => {
   try {
     const userId = req.params.id;
-    const result = await authModel.destroy({
+    const result = await db.Auth.destroy({
       where: {
         id: userId,
       },
       include: [
         {
-          model: profileModel,
+          model: db.Profile,
           cascade: true,
         },
       ],
@@ -63,13 +61,13 @@ exports.updateUserData = async (req, res) => {
   };
   try {
     const userId = req.params.id;
-    const profResult = await profileModel.update(profileData, {
+    const profResult = await db.Profile.update(profileData, {
       where: {
         id: userId,
       },
     });
 
-    const authResult = await authModel.update(authData, {
+    const authResult = await db.Auth.update(authData, {
       where: {
         id: userId,
       },
@@ -94,7 +92,7 @@ exports.addImage = async (req, res) => {
     const userId = req.params.id;
     const imgDir = process.cwd() + "/uploads/images/" + req.file.originalname;
 
-    const profResult = await profileModel.update(
+    const profResult = await db.Profile.update(
       { profilePhoto: imgDir },
       {
         where: {
