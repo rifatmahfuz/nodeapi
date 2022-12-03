@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
-const con = require("../controllers/coreController");
-const user = require("../controllers/userController");
+const con = require("../controllers/authController");
 
 router.get("/", (req, res) => res.send("NodeAPI Server is running"));
 

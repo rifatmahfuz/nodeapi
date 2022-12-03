@@ -30,4 +30,5 @@ const sequelize = new Sequelize(
  * Export the Sequelize instance. This instance can now be
  * used in the app.js file to authenticate and establish a database connection.
  */
+
 module.exports = sequelize;

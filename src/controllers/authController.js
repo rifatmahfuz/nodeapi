@@ -3,7 +3,7 @@ const models = require("../models");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const services = require("../services/register.services");
+const services = require("../services/auth.services");
 
 exports.register = async (req, res) => {
   const trx = await sequelize.transaction();
