@@ -1,5 +1,9 @@
-#uploaded files
-uploads/
+# image files
+*.jpg
+*.png
+*.gif
+*.jpeg
+
 
 # Logs
 logs
