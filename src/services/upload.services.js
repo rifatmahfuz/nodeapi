@@ -4,7 +4,7 @@ const maxSize = 2 * 1024 * 1024;
 const fs = require("fs");
 const path = require("path");
 require("dotenv").config();
-folder = process.env.image_folder;
+folder = process.env.UPLOAD_DEST;
 var currentPath = path.join(process.cwd(), folder);
 
 let storage = multer.diskStorage({
