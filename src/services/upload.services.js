@@ -4,11 +4,12 @@ const maxSize = 2 * 1024 * 1024;
 const fs = require("fs");
 const path = require("path");
 require("dotenv").config();
-folder = process.env.UPLOAD_DEST;
-var currentPath = path.join(process.cwd(), folder);
+// folder = process.env.UPLOAD_DEST;
+var currentPath = path.join(process.cwd(), "/src/uploads/images");
 
 let storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    fs.mkdirSync(currentPath, { recursive: true })
     cb(null, currentPath);
   },
   filename: (req, file, cb) => {
