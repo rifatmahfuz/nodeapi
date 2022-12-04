@@ -1,10 +1,9 @@
 const sequelize = require("../config/database");
-const authModel = require("../models/auth");
-const profileModel = require("../models/profile");
+const models = require("../models");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const services = require("../services/register.services");
+const services = require("../services/auth.services");
 
 exports.register = async (req, res) => {
   const trx = await sequelize.transaction();
@@ -28,17 +27,19 @@ exports.register = async (req, res) => {
     const validate = await services.regValidator.validateAsync(req.body);
     //checking if the user already exists
     const emailChecker = authData.email;
-    const oldUser = await authModel.findOne({ where: { email: emailChecker } });
+    const oldUser = await models.Auth.findOne({
+      where: { email: emailChecker },
+    });
     if (oldUser) {
       return res.status(409).send("User Already Exists. Please Login");
     }
 
-    const auth = await authModel.create(authData, { transaction: trx });
+    const auth = await models.Auth.create(authData, { transaction: trx });
     let profile;
 
     if (auth && auth.id) {
-      profileData.authId = auth.id;
-      profile = await profileModel.create(profileData, { transaction: trx });
+      profileData.AuthId = auth.id;
+      profile = await models.Profile.create(profileData, { transaction: trx });
     }
 
     const token = jwt.sign(
@@ -71,7 +72,7 @@ exports.login = async (req, res) => {
       res.status(400).send("please fill out email and password both");
     }
 
-    const userExists = await authModel.findOne({
+    const userExists = await models.Auth.findOne({
       where: { email: email.toLowerCase() },
     });
 

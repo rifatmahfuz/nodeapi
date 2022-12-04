@@ -14,22 +14,21 @@ const connectionPoolOptions = {
  * the connection parameters separately to the Sequelize constructor.
  */
 const sequelize = new Sequelize(
-  `${process.env.DATABASE}`,
-  `${process.env.DATABASE_USER}`,
-  `${process.env.DATABASE_PASSWORD}`,
+  "nodedb",
+  "root",
+  "",
 
   {
-    host: `${process.env.DATABASE_HOST}`,
+    host: `localhost`,
     dialect: "mysql",
     pool: connectionPoolOptions,
     logging: false,
   }
 );
 
-
-
 /**
  * Export the Sequelize instance. This instance can now be
  * used in the app.js file to authenticate and establish a database connection.
  */
+
 module.exports = sequelize;
